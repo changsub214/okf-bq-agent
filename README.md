@@ -1,12 +1,12 @@
 # OKF 데이터 분석 에이전트 (OKF Data Analytics Agent)
 
-이 프로젝트는 **[OKF (Open Knowledge Format)](https://github.com/GoogleCloudPlatform/knowledge-catalog/tree/main/okf)**와 **[BigQuery Graph](https://cloud.google.com/bigquery/docs/graphs-intro)**를 활용하여 이커머스 데이터를 분석하고 비즈니스 인사이트를 도출하는 Google ADK 기반 AI 에이전트입니다.
+이 프로젝트는 [OKF (Open Knowledge Format)](https://github.com/GoogleCloudPlatform/knowledge-catalog/tree/main/okf)와 [BigQuery Graph](https://cloud.google.com/bigquery/docs/graphs-intro)를 활용하여 이커머스 데이터를 분석하고 비즈니스 인사이트를 도출하는 Google ADK 기반 데이터 분석 에이전트입니다.
 
 ## 🌟 주요 특징 (Why OKF & BigQuery Graph?)
 
 ### 1. [Open Knowledge Format (OKF)](https://github.com/GoogleCloudPlatform/knowledge-catalog/tree/main/okf)
 OKF는 지식을 Markdown 파일과 YAML Frontmatter 형식으로 표현하는 오픈 소스 표준 포맷입니다.
-*   **인간 및 에이전트 친화적**: 복잡한 API나 SDK 없이도 사람이 직접 읽고 쓸 수 있으며, LLM(대형 언어 모델)이 컨텍스트로 쉽게 흡수할 수 있습니다.
+*   **인간 및 에이전트 친화적**: 사람과 AI가 쉽게 직접 읽고 쓸 수 있으며, LLM(대형 언어 모델)이 컨텍스트로 쉽게 흡수할 수 있습니다.
 *   **버전 관리 용이성**: 모든 지식 문서가 Git으로 관리되므로 변경 이력 추적(blame), 코드 리뷰(PR) 등 소프트웨어 개발 워크플로우를 그대로 적용할 수 있습니다.
 *   **구조화 + 비구조화 데이터 결합**: 필터링 및 인덱싱이 필요한 메타데이터는 YAML에, 상세 설명 및 예시 쿼리 등은 Markdown 본문에 자유롭게 작성할 수 있습니다.
 *   **그래프 구조 표현**: 문서 간의 링크를 통해 단순 계층 구조를 넘어선 리치한 관계(Graph)를 표현합니다.
@@ -46,7 +46,8 @@ BigQuery Graph는 관계형 데이터와 그래프 모델을 통합하여 대규
 ### 환경 변수 설정
 루트 디렉토리에 `.env` 파일을 생성하고 다음 설정을 입력합니다.
 ```env
-GOOGLE_CLOUD_PROJECT="<YOUR_PROJECT_ID>"
+GOOGLE_CLOUD_PROJECT="YOUR_PROJECT_ID"
+GOOGLE_CLOUD_LOCATION="YOUR_PROJECT_REGION" #global, us, eu ...
 MODEL="gemini-3.5-flash"  # 사용할 모델명
 ```
 
@@ -73,11 +74,6 @@ adk web
 
 에이전트에게 다음과 같은 질문을 던져 BigQuery Graph 분석을 수행하고 인사이트를 얻을 수 있습니다.
 
-1.  **배송 리드타임 및 병목 분석**
-    *   *질문*: "최근 글로벌 배송 리드타임이 가장 긴 물류센터는 어디이며, 해당 물류센터에서 공급하는 주요 상품 카테고리의 주문 상태별 현황은 어떠한가요?"
-2.  **카테고리별 구매자 분석**
-    *   *질문*: "실제 상품을 구매한 고유 사용자 수 기준 가장 인기 있는 상품 카테고리는 무엇이며, 이들의 총 매출 기여도는 어떻게 되나요?"
-3.  **물류센터 재고 매핑**
-    *   *질문*: "각 물류센터별로 공급하는 상품과 실물 재고 현황을 요약해서 보여줘."
-4.  **이탈 고객 및 행동 패턴 분석**
-    *   *질문*: "장바구니에 상품을 담았으나 실제 구매까지 이어지지 않고 이탈한 세션들의 사용자 유입 채널별 현황을 분석해줘."
+1.  *질문1*: "골드 이상 등급 회원의 최근 6개월간 구매 및 반품 데이터를 R2G 그래프를 통해 조회하여 회원별 반품률을 산출해 주세요. 이들 중 어뷰징 의심 기준에 해당하는 대상자 수와 이들의 총 반품액을 집계해 주시고, 정책에 따른 제재 조치 제안 및 예상 물류비 절감 효과를 분석해 주세요."
+2.  *질문2*: "각 물류 센터 별로 배송이 완료(Delivered)된 주문에 대해, 사용자의 거주 위치와 상품이 출고된 물류 센터 위치 간의 평균 지리적 거리를 계산하고, 이 거리가 평균 배송 소요 시간에 미치는 영향을 분석해주세요. 추가로, 사용자 거주 국가와 물류 센터 간 배송 중 지리적 거리는 멀지만 주문량이 많아 물류 재배치가 시급한 가장 비효율적인 상위 3개 노선(물류 센터 - 사용자 국가 조합) 을 도출하고 재고 분산 전략을 제안해주세요."
+3.  *질문3*: "Facebook 채널을 통해 가입한 유저들이 동일한 주문 내에서 함께 가장 많이 구매한 서로 다른 상품 카테고리 쌍 TOP 5를 찾아주세요. 이 중 가장 많이 함께 구매된 카테고리 조합의 평균 결제 금액 합계는 얼마이며, 해당 카테고리 조합으로 이루어진 주문들의 취소(Cancelled) 및 반품(Returned) 비율은 타 상품군 대비 어떠한지 분석하여 마케팅 세일즈 패키지 제안서 형태로 요약해주세요."
