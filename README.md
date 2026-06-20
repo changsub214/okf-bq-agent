@@ -50,6 +50,71 @@ GOOGLE_CLOUD_PROJECT="YOUR_PROJECT_ID"
 GOOGLE_CLOUD_LOCATION="YOUR_PROJECT_REGION" #global, us, eu ...
 MODEL="gemini-3.5-flash"  # 사용할 모델명
 ```
+4.  BigQuery에서 ecommerce 데이터세트(US 리전) 생성 후 다음 쿼리를 실행합니다.
+```sql
+CREATE OR REPLACE PROPERTY GRAPH `nice-incline-500004-v9.ecommerce.R2G`
+NODE TABLES (
+
+ `bigquery-public-data.thelook_ecommerce.users`
+   KEY (id)
+   LABEL User,
+
+ `bigquery-public-data.thelook_ecommerce.products`
+   KEY (id)
+   LABEL Product,
+
+ `bigquery-public-data.thelook_ecommerce.orders`
+   KEY (order_id)
+   LABEL `Order`,  -- 예약어 충돌을 예방하기 위해 레이블도 백틱으로 처리
+
+ `bigquery-public-data.thelook_ecommerce.distribution_centers`
+   KEY (id)
+   LABEL DistributionCenter,
+
+ `bigquery-public-data.thelook_ecommerce.inventory_items`
+   KEY (id)
+   LABEL InventoryItem,
+
+ `bigquery-public-data.thelook_ecommerce.events`
+   KEY (id)
+   LABEL Event
+)
+EDGE TABLES (
+ `bigquery-public-data.thelook_ecommerce.orders` AS `places`
+   KEY (order_id)
+   SOURCE KEY (user_id) REFERENCES `bigquery-public-data.thelook_ecommerce.users` (id)
+   DESTINATION KEY (order_id) REFERENCES `bigquery-public-data.thelook_ecommerce.orders` (order_id)
+   LABEL PLACES,
+
+ `bigquery-public-data.thelook_ecommerce.order_items` AS contains_item
+   KEY (id)
+   SOURCE KEY (order_id) REFERENCES `bigquery-public-data.thelook_ecommerce.orders` (order_id)
+   DESTINATION KEY (inventory_item_id) REFERENCES `bigquery-public-data.thelook_ecommerce.inventory_items` (id)
+   LABEL CONTAINS_ITEM,
+
+ `bigquery-public-data.thelook_ecommerce.inventory_items` AS is_product
+   KEY (id)
+   SOURCE KEY (id) REFERENCES `bigquery-public-data.thelook_ecommerce.inventory_items` (id)
+   DESTINATION KEY (product_id) REFERENCES `bigquery-public-data.thelook_ecommerce.products` (id)
+   LABEL IS_PRODUCT,
+
+ `bigquery-public-data.thelook_ecommerce.inventory_items` AS stocked_at
+   KEY (id)
+   SOURCE KEY (id) REFERENCES `bigquery-public-data.thelook_ecommerce.inventory_items` (id)
+   DESTINATION KEY (product_distribution_center_id) REFERENCES `bigquery-public-data.thelook_ecommerce.distribution_centers` (id)
+   LABEL STOCKED_AT,
+
+ `bigquery-public-data.thelook_ecommerce.products` AS supplied_by
+   KEY (id)
+   SOURCE KEY (id) REFERENCES `bigquery-public-data.thelook_ecommerce.products` (id)
+   DESTINATION KEY (distribution_center_id) REFERENCES `bigquery-public-data.thelook_ecommerce.distribution_centers` (id)
+   LABEL SUPPLIED_BY,
+
+ `bigquery-public-data.thelook_ecommerce.events` AS performed_event
+   KEY (id)
+   SOURCE KEY (user_id) REFERENCES `bigquery-public-data.thelook_ecommerce.users` (id)
+```
+
 
 ---
 
