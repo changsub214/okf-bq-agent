@@ -65,7 +65,7 @@ NODE TABLES (
 
  `bigquery-public-data.thelook_ecommerce.orders`
    KEY (order_id)
-   LABEL `Order`,  -- 예약어 충돌을 예방하기 위해 레이블도 백틱으로 처리
+   LABEL `Order`,
 
  `bigquery-public-data.thelook_ecommerce.distribution_centers`
    KEY (id)
