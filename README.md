@@ -50,9 +50,9 @@ GOOGLE_CLOUD_PROJECT="YOUR_PROJECT_ID"
 GOOGLE_CLOUD_LOCATION="YOUR_PROJECT_REGION" #global, us, eu ...
 MODEL="gemini-3.5-flash"  # 사용할 모델명
 ```
-4.  BigQuery에서 ecommerce 데이터세트(US 리전) 생성 후 다음 쿼리를 실행합니다.
+4.  BigQuery에서 ecommerce 데이터세트(US 리전) 생성 후 다음 쿼리에서 PROJECT명 설정 후 실행합니다.
 ```sql
-CREATE OR REPLACE PROPERTY GRAPH `nice-incline-500004-v9.ecommerce.R2G`
+CREATE OR REPLACE PROPERTY GRAPH `YOUR_PROJECT.ecommerce.R2G`
 NODE TABLES (
 
  `bigquery-public-data.thelook_ecommerce.users`
