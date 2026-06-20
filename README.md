@@ -44,7 +44,7 @@ BigQuery Graph는 관계형 데이터와 그래프 모델을 통합하여 대규
     ```
 
 ### 환경 변수 설정
-루트 디렉토리에 `.env` 파일을 생성하고 다음 설정을 입력합니다.
+루트 디렉토리 내 `.env` 파일에서 다음 설정을 입력합니다.
 ```env
 GOOGLE_CLOUD_PROJECT="YOUR_PROJECT_ID"
 GOOGLE_CLOUD_LOCATION="YOUR_PROJECT_REGION" #global, us, eu ...
